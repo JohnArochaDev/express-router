@@ -35,3 +35,5 @@ userRouter.delete('/:id', async (req, res) => {
     await User.destroy({where: {id: id}})
     res.status(203).send()
 })
+
+module.exports = userRouter
