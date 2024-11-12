@@ -1,6 +1,8 @@
 const express = require('express')
 const User = require('../models/User.js')
 
+const { check, validationResult } = require('express-validator')
+
 const userRouter = express.Router()
 
 userRouter.use(express.json())
@@ -16,11 +18,17 @@ userRouter.get('/', async (req, res) => {
     res.status(200).json(users)
 })
 
-userRouter.post('/', async (req, res) => {
-    const newUser = req.body
-    const allUsers = await User.create(newUser)
-    const users = await User.findAll()
-    res.status(201).json(allUsers)
+userRouter.post('/', [check("name").not().isEmpty()], async (req, res) => {
+    const errors = validationResult(req)
+
+    if(!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    } else {
+        const newUser = req.body
+        const allUsers = await User.create(newUser)
+        const users = await User.findAll()
+        res.status(201).json(allUsers)
+    }
 })
 
 userRouter.put('/:id', async (req, res) => {
